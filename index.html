@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Monetag BM — Mini App (PEPE)</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+:root{--bg: #f2f5fb;--card: #ffffff;--muted: #7b8794;--accent: #5e17f4;--accent-2: #f7d547;--success: #21a179;--danger: #ef5b5b;--radius: 14px;--glass: rgba(255,255,255,0.7);}
+*{box-sizing:border-box}
+body{font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;margin:0;padding:0 0 90px 0;background: linear-gradient(180deg, #eef3ff 0%, var(--bg) 100%);color:#111827;min-height:100vh;}
+.app-container{max-width:460px;margin:18px auto;padding:14px;}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.profile-pic{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,#a259ff,#5e17f4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;box-shadow: 0 6px 18px rgba(94,23,244,0.12);}
+.header .name-balance{flex:1}
+.user-name{display:block;font-weight:700;font-size:16px}
+.balance{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow: 0 8px 24px rgba(16,24,40,0.06);border:1px solid rgba(15,23,42,0.03);overflow:hidden;}
+.row{display:flex;align-items:center;gap:12px}
+.hint{font-size:13px;color:var(--muted)}
+.tasks-hero{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.btn{border:0;padding:12px 14px;border-radius:10px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary{background: linear-gradient(90deg, var(--accent-2), #f4b63c);color:#111;box-shadow: 0 8px 18px rgba(247,213,71,0.12);}
+.btn-ghost{background:transparent;border:1px dashed rgba(15,23,42,0.06);color:var(--muted);}
+.ad-timer{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.progress{height:10px;border-radius:999px;background:#f0f3ff;flex:1;overflow:hidden;}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#8b49ff);transition:width 0.3s linear;}
+.ad-info{font-size:13px;color:var(--muted);min-width:120px;text-align:right}
+.referral-link-box{display:flex;gap:8px;margin-top:12px;border-radius:10px;border:1px solid #eee;padding:6px;background:var(--glass);}
+.referral-link-box input{border:0;outline:0;padding:10px;background:transparent;font-weight:600;color:#0f1724;width:100%;}
+.copy-btn{background:#f5f7ff;padding:8px;border-radius:8px;border:0;cursor:pointer}
+.share-buttons{display:flex;gap:8px;margin-top:12px}
+.social{flex:1;padding:10px;border-radius:10px;color:white;font-weight:600;border:0;cursor:pointer}
+.telegram{background:#2AABEE}
+.whatsapp{background:#25D366}
+.twitter{background:#1DA1F2}
+.input{width:100%;padding:12px;border-radius:10px;border:1px solid #eee;background:white;font-weight:600;}
+.small{font-size:13px;color:var(--muted)}
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:460px;bottom:12px;padding:10px;border-radius:16px;background:var(--card);display:flex;justify-content:space-around;gap:6px;box-shadow:0 18px 40px rgba(2,6,23,0.12);}
+.nav-item{flex:1;text-align:center;padding:8px 6px;border-radius:12px;color:var(--muted);text-decoration:none;font-weight:600}
+.nav-item.active{background:linear-gradient(90deg, rgba(94,23,244,0.08), rgba(162,89,255,0.06));color:var(--accent)}
+.snackbar{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:rgba(15,23,42,0.95);color:white;padding:10px 16px;border-radius:10px;display:none;font-weight:600;}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.4);display:none;align-items:center;justify-content:center}
+.modal{background:var(--card);border-radius:12px;padding:18px;max-width:420px;width:92%;box-shadow:0 20px 50px rgba(2,6,23,0.12)}
+@media (max-width:420px){.app-container{padding:12px}.bottom-nav{bottom:10px;border-radius:12px;padding:8px}}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header card"><div class="profile-pic" id="avatar">U</div><div class="name-balance"><span class="user-name" id="user-name">User</span><span class="balance">Balance: <strong id="user-balance">0</strong> PEPE</span></div><div style="text-align:right"><div class="hint" style="font-size:12px">Daily Ads left</div><div style="font-weight:700" id="ads-left">...</div></div></div>
+  <div id="ads-task" class="card screen active"><div class="tasks-hero row"><div class="tasks-left"><h3>Watch Ads — Earn PEPE</h3><div class="tasks-stats hint">Short ads, instant credit</div></div><div style="text-align:right"><div class="hint">Per Ad</div><div style="font-weight:700">+ <span id="per-ad-amt">...</span> PEPE</div></div></div><div style="margin-top:14px"><div class="row" style="justify-content:space-between;align-items:center"><button id="start-ad" class="btn btn-primary"><span class="material-icons">play_arrow</span> Start Ad</button><button id="fast-skip" class="btn btn-ghost" title="Skip (debug)"><span class="material-icons">skip_next</span> Skip</button></div><div class="ad-timer"><div class="progress" aria-hidden="true"><div id="progress-bar" class="progress-bar"></div></div><div class="ad-info"><div id="ad-timer-text" class="hint">Ready</div></div></div><div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between"><div><div class="small hint">Session Earned</div><div style="font-weight:700"> <span id="session-earned">0</span> PEPE</div></div><div><div class="small hint">Total Ads Today</div><div style="font-weight:700" id="ads-used">...</div></div></div></div></div>
+  <div id="refer" class="card screen" style="display:none"><h3>Refer & Earn Forever</h3><p class="hint" style="margin-top:6px">Share your referral link to earn commissions.</p><div class="ref-block" style="margin-top:10px"><div class="referral-link-box"><input id="ref-link" value="Loading your link..." readonly><button id="copy-ref" class="copy-btn" title="Copy referral link"><span class="material-icons">content_copy</span></button></div><div class="share-buttons"><button class="social telegram" id="share-telegram">Telegram</button><button class="social whatsapp" id="share-whatsapp">WhatsApp</button><button class="social twitter" id="share-twitter">Twitter</button></div></div></div>
+  <div id="withdraw" class="card screen" style="display:none"><h3>Withdraw PEPE</h3><p class="hint" style="margin-top:6px">Enter amount and address to request withdrawal.</p><div style="margin-top:12px"><label class="small">Amount (PEPE)</label><input id="withdraw-amount" class="input" type="number" placeholder="e.g. 25000" min="1"><div style="margin-top:12px"><label class="small">Withdraw Address</label><input id="withdraw-address" class="input" type="text" placeholder="Your wallet address"></div><div style="margin-top:12px"><div class="small hint">Minimum withdrawal: <strong id="min-withdraw-display">... PEPE</strong></div></div><div style="margin-top:12px;display:flex;gap:10px"><button id="request-withdraw" class="btn btn-primary full-width">Request Withdrawal</button><button id="reset-form" class="btn btn-ghost">Reset</button></div></div></div>
+</div>
+<div class="bottom-nav"><a href="#ads-task" id="nav-ads" class="nav-item active"><span class="material-icons">task</span><div style="font-size:12px">Ads Task</div></a><a href="#refer" id="nav-refer" class="nav-item"><span class="material-icons">group_add</span><div style="font-size:12px">Refer</div></a><a href="#withdraw" id="nav-withdraw" class="nav-item"><span class="material-icons">account_balance_wallet</span><div style="font-size:12px">Withdraw</div></a></div>
+<div id="snack" class="snackbar">Message</div>
+<div id="modal-backdrop" class="modal-backdrop"><div class="modal"><h3 id="modal-title">Confirm Withdrawal</h3><p id="modal-body" class="hint">Are you sure?</p><div class="row" style="margin-top:12px"><button id="modal-cancel" class="btn btn-ghost" style="flex:1">Cancel</button><button id="modal-confirm" class="btn btn-primary" style="flex:1">Confirm</button></div></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore-compat.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyApJaE_prnIAdDcsT8HOvRGJ7tE1XQtZT0",
+      authDomain: "pepe-70699.firebaseapp.com",
+      projectId: "pepe-70699",
+      storageBucket: "pepe-70699.appspot.com",
+      messagingSenderId: "835603325201",
+      appId: "1:835603325201:web:bde8785c5f81fbd6bb2cb0",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const CONFIG = {
+      perAdAmount: 250, adDuration: 5, dailyLimit: 40, minWithdraw: 10000,
+    };
+
+    let state = {
+      balance: 0, adsUsedToday: 0, dailyDateKey: null, sessionEarned: 0, userId: null,
+    };
+
+    const dom = {
+        userBalance: document.getElementById('user-balance'), sessionEarned: document.getElementById('session-earned'), adsLeft: document.getElementById('ads-left'), adsUsed: document.getElementById('ads-used'), startAdBtn: document.getElementById('start-ad'), skipBtn: document.getElementById('fast-skip'), progressBar: document.getElementById('progress-bar'), adTimerText: document.getElementById('ad-timer-text'), perAdAmt: document.getElementById('per-ad-amt'), snack: document.getElementById('snack'), refLink: document.getElementById('ref-link'), minWithdrawDisplay: document.getElementById('min-withdraw-display'),
+    };
+
+    const tg = window.Telegram?.WebApp;
+
+    async function loadUserData() { /* ... (This function remains unchanged) ... */ }
+    async function saveUserData() { /* ... (This function remains unchanged) ... */ }
+    function render() { /* ... (This function remains unchanged) ... */ }
+    let snackTimer = null;
+    function showSnack(msg, timeout=3000){ /* ... (This function remains unchanged) ... */ }
+    
+    // <<< --- NEW FUNCTION TO SHOW MONETAG AD --- >>>
+    function showMonetagAd() {
+        // Remove any old script to avoid conflicts
+        const existingScript = document.getElementById('monetag-ad-script');
+        if (existingScript) {
+            existingScript.remove();
+        }
+        
+        // Create a new script element
+        const monetagScript = document.createElement('script');
+        monetagScript.id = 'monetag-ad-script'; // Give it an ID for easy removal next time
+        
+        // Set the attributes provided by you
+        monetagScript.src = '//libtl.com/sdk.js';
+        monetagScript.dataset.zone = '9708398';
+        monetagScript.dataset.sdk = 'show_9708398';
+        monetagScript.async = true; // Load asynchronously
+        
+        // Append the script to the head, which will load and execute it
+        document.head.appendChild(monetagScript);
+    }
+
+    let adInProgress = false; let adInterval = null;
+    function startAd() {
+      if (adInProgress || !state.userId) return;
+      if (state.adsUsedToday >= CONFIG.dailyLimit) { showSnack('Daily ad limit reached'); return; }
+      
+      // <<< --- MONETAG INTEGRATION IS HERE --- >>>
+      showMonetagAd(); // Show the ad immediately
+
+      adInProgress = true; let total = CONFIG.adDuration; let elapsed = 0;
+      dom.progressBar.style.width = '0%'; dom.adTimerText.innerText = `Ad: ${total}s`;
+      dom.startAdBtn.disabled = true; dom.skipBtn.disabled = false;
+      
+      // Start the app's own timer in the background
+      adInterval = setInterval(()=> {
+        elapsed++; const pct = Math.min(100, Math.round((elapsed/total)*100));
+        dom.progressBar.style.width = pct + '%'; const remaining = Math.max(total - elapsed, 0);
+        dom.adTimerText.innerText = (remaining > 0) ? `Ad: ${remaining}s` : 'Finishing...';
+        if (elapsed >= total) { finishAd(); }
+      }, 1000);
+    }
+
+    async function finishAd() {
+        clearInterval(adInterval); adInterval = null; adInProgress = false;
+        state.adsUsedToday += 1; state.balance += CONFIG.perAdAmount; state.sessionEarned += CONFIG.perAdAmount;
+        await saveUserData();
+        dom.progressBar.style.width = '100%'; dom.adTimerText.innerText = 'Ad finished — credited';
+        showSnack(`+${CONFIG.perAdAmount} PEPE credited`);
+        render();
+    }
+
+    function setupEventListeners() { /* ... (This function remains unchanged) ... */ }
+    function initializeApp() { /* ... (This function remains unchanged) ... */ }
+
+    // Re-pasting the unchanged functions for completeness
+    async function loadUserData() {
+        if (!state.userId) { showSnack("Cannot identify Telegram user. Please restart."); dom.startAdBtn.disabled = true; return; }
+        const userRef = db.collection('users').doc(state.userId);
+        const doc = await userRef.get();
+        if (doc.exists) {
+            const userData = doc.data(); state.balance = userData.balance || 0; const today = new Date().toISOString().slice(0, 10);
+            if (userData.dailyDateKey !== today) {
+                state.adsUsedToday = 0; state.dailyDateKey = today; await saveUserData();
+            } else {
+                state.adsUsedToday = userData.adsUsedToday || 0; state.dailyDateKey = userData.dailyDateKey;
+            }
+        } else {
+            const today = new Date().toISOString().slice(0, 10); state.dailyDateKey = today;
+            await userRef.set({
+                balance: 0, adsUsedToday: 0, dailyDateKey: today, joinedAt: firebase.firestore.FieldValue.serverTimestamp(), telegramInfo: tg?.initDataUnsafe?.user || {},
+            });
+        }
+        render();
+    }
+    async function saveUserData() {
+        if (!state.userId) return; const userRef = db.collection('users').doc(state.userId);
+        await userRef.set({
+            balance: state.balance, adsUsedToday: state.adsUsedToday, dailyDateKey: state.dailyDateKey
+        }, { merge: true });
+    }
+    function render() {
+      dom.userBalance.innerText = state.balance.toLocaleString(); dom.sessionEarned.innerText = state.sessionEarned.toLocaleString();
+      dom.adsUsed.innerText = state.adsUsedToday; dom.adsLeft.innerText = Math.max(CONFIG.dailyLimit - state.adsUsedToday, 0);
+      dom.perAdAmt.innerText = CONFIG.perAdAmount;
+      if (state.userId) { dom.refLink.value = `https://t.me/your_bot_username_here?start=${state.userId}`; }
+      dom.minWithdrawDisplay.innerText = `${CONFIG.minWithdraw.toLocaleString()} PEPE`;
+      if (state.adsUsedToday >= CONFIG.dailyLimit) {
+        dom.startAdBtn.disabled = true; dom.startAdBtn.innerHTML = '<span class="material-icons">block</span> Limit reached';
+      } else {
+        dom.startAdBtn.disabled = false; dom.startAdBtn.innerHTML = '<span class="material-icons">play_arrow</span> Start Ad';
+      }
+    }
+    function showSnack(msg, timeout=3000){
+      dom.snack.innerText = msg; dom.snack.style.display = 'block'; clearTimeout(snackTimer);
+      snackTimer = setTimeout(()=> dom.snack.style.display = 'none', timeout);
+    }
+    function setupEventListeners() {
+        dom.startAdBtn.addEventListener('click', startAd);
+        dom.skipBtn.addEventListener('click', ()=> { if (adInProgress) finishAd(); });
+        const navLinks = { ads: document.getElementById('nav-ads'), refer: document.getElementById('nav-refer'), withdraw: document.getElementById('nav-withdraw') };
+        const screens = { ads: document.getElementById('ads-task'), refer: document.getElementById('refer'), withdraw: document.getElementById('withdraw') };
+        function switchScreen(target) {
+            Object.values(screens).forEach(s => s.style.display = 'none');
+            Object.values(navLinks).forEach(n => n.classList.remove('active'));
+            screens[target].style.display = 'block'; navLinks[target].classList.add('active');
+        }
+        navLinks.ads.addEventListener('click', (e) => { e.preventDefault(); switchScreen('ads'); });
+        navLinks.refer.addEventListener('click', (e) => { e.preventDefault(); switchScreen('refer'); });
+        navLinks.withdraw.addEventListener('click', (e) => { e.preventDefault(); switchScreen('withdraw'); });
+        document.getElementById('copy-ref').addEventListener('click', ()=>{ dom.refLink.select(); document.execCommand('copy'); showSnack('Referral link copied'); });
+        document.getElementById('share-telegram').addEventListener('click', ()=>{ const url = encodeURIComponent(dom.refLink.value); window.open(`https://t.me/share/url?url=${url}`,'_blank'); });
+        document.getElementById('share-whatsapp').addEventListener('click', ()=>{ const text = encodeURIComponent("Join and earn: " + dom.refLink.value); window.open(`https://wa.me/?text=${text}`,'_blank'); });
+        document.getElementById('share-twitter').addEventListener('click', ()=>{ const text = encodeURIComponent("Join & earn on Monetag BM: " + dom.refLink.value); window.open(`https://twitter.com/intent/tweet?text=${text}`,'_blank'); });
+        const modal = { backdrop: document.getElementById('modal-backdrop'), title: document.getElementById('modal-title'), body: document.getElementById('modal-body'), cancel: document.getElementById('modal-cancel'), confirm: document.getElementById('modal-confirm') };
+        document.getElementById('request-withdraw').addEventListener('click', ()=>{
+            const amountEl = document.getElementById('withdraw-amount'); const addressEl = document.getElementById('withdraw-address');
+            const amount = Number(amountEl.value || 0); const addr = (addressEl.value || '').trim();
+            if (!amount || amount <= 0){ showSnack('Enter a valid amount'); return; }
+            if (amount < CONFIG.minWithdraw){ showSnack(`Minimum withdrawal is ${CONFIG.minWithdraw} PEPE`); return; }
+            if (amount > state.balance){ showSnack('Insufficient balance'); return; }
+            if (!addr){ showSnack('Enter Binance withdraw address'); return; }
+            modal.title.innerText = 'Confirm Withdrawal'; modal.body.innerText = `Withdraw ${amount} PEPE to:\n"${addr}"?`;
+            modal.backdrop.style.display = 'flex';
+            modal.confirm.onclick = async function(){
+                try {
+                    modal.confirm.disabled = true;
+                    await db.collection('withdrawals').add({ userId: state.userId, userName: (tg?.initDataUnsafe?.user?.first_name || 'N/A'), amount: amount, address: addr, status: 'pending', requestedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                    state.balance -= amount; await saveUserData();
+                    render(); modal.backdrop.style.display = 'none';
+                    showSnack('Withdrawal requested successfully!'); amountEl.value = ''; addressEl.value = '';
+                } catch (error) { showSnack('An error occurred. Please try again.'); modal.backdrop.style.display = 'none';
+                } finally { modal.confirm.disabled = false; }
+            };
+            modal.cancel.onclick = function(){ modal.backdrop.style.display = 'none'; };
+        });
+        document.getElementById('reset-form').addEventListener('click', ()=>{ document.getElementById('withdraw-amount').value = ''; document.getElementById('withdraw-address').value = ''; showSnack('Form reset'); });
+        document.addEventListener('visibilitychange', ()=>{ if (document.hidden && adInterval){ clearInterval(adInterval); adInterval = null; adInProgress = false; dom.startAdBtn.disabled = false; dom.progressBar.style.width='0%'; dom.adTimerText.innerText='Ready'; }});
+    }
+    function initializeApp() {
+        if (tg) {
+            tg.ready(); const user = tg.initDataUnsafe?.user;
+            if (user && user.id) {
+                state.userId = user.id.toString();
+                document.getElementById('user-name').innerText = (user.first_name || 'User');
+                document.getElementById('avatar').innerText = (user.first_name || 'U').slice(0, 1).toUpperCase();
+                loadUserData();
+            } else { document.getElementById('ads-task').innerHTML = '<h3>Error: Could not get user data. Please restart the app from Telegram.</h3>'; }
+        } else {
+          showSnack("Not in Telegram. Using test user.");
+          state.userId = 'test_user_123';
+          document.getElementById('user-name').innerText = 'Test User';
+          document.getElementById('avatar').innerText = 'T';
+          loadUserData();
+        }
+        setupEventListeners(); render();
+    }
+    initializeApp();
+});
+</script>
+</body>
+</html>
